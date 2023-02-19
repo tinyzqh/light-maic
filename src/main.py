@@ -3,9 +3,6 @@ import os
 import collections
 from os.path import dirname, abspath
 from copy import deepcopy
-from sacred import Experiment, SETTINGS
-from sacred.observers import FileStorageObserver
-from sacred.utils import apply_backspaces_and_linefeeds
 import sys
 import torch as th
 from utils.logging import get_logger
@@ -13,18 +10,12 @@ import yaml
 
 from run import run
 
-SETTINGS['CAPTURE_MODE'] = "fd" # set to "no" if you want to see stdout/stderr in console
 logger = get_logger()
-
-ex = Experiment("pymarl")
-ex.logger = logger
-ex.captured_out_filter = apply_backspaces_and_linefeeds
 
 results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
 
 
-@ex.main
-def my_main(_run, _config, _log):
+def my_main(_config, _log):
     # Setting the random seed throughout the modules
     config = config_copy(_config)
     np.random.seed(config["seed"])
@@ -32,7 +23,7 @@ def my_main(_run, _config, _log):
     config['env_args']['seed'] = config["seed"]
 
     # run the framework
-    run(_run, config, _log)
+    run(config, _log)
 
 
 def _get_comment(params, arg_name):
@@ -56,7 +47,7 @@ def _get_config(params, arg_name, subfolder):
     if config_name is not None:
         with open(os.path.join(os.path.dirname(__file__), "config", subfolder, "{}.yaml".format(config_name)), "r") as f:
             try:
-                config_dict = yaml.load(f)
+                config_dict = yaml.load(f, Loader=yaml.Loader)
             except yaml.YAMLError as exc:
                 assert False, "{}.yaml error: {}".format(config_name, exc)
         return config_dict
@@ -81,12 +72,13 @@ def config_copy(config):
 
 
 if __name__ == '__main__':
-    params = deepcopy(sys.argv)
+    # params = deepcopy(sys.argv)
 
+    params = ['src/main.py', '--config=maic_qplex', '--env-config=sc2fake', 'with', 'env_args.map_name=MMM2', 'seed=42']
     # Get the defaults from default.yaml
     with open(os.path.join(os.path.dirname(__file__), "config", "default.yaml"), "r") as f:
         try:
-            config_dict = yaml.load(f)
+            config_dict = yaml.load(f, Loader=yaml.Loader)
         except yaml.YAMLError as exc:
             assert False, "default.yaml error: {}".format(exc)
 
@@ -99,13 +91,9 @@ if __name__ == '__main__':
     config_dict = recursive_dict_update(config_dict, alg_config)
     config_dict['comment'] = comment
 
-    # now add all the config to sacred
-    ex.add_config(config_dict)
-
     # Save to disk by default for sacred
     logger.info("Saving to FileStorageObserver in results/sacred.")
     file_obs_path = os.path.join(results_path, "sacred")
-    ex.observers.append(FileStorageObserver.create(file_obs_path))
 
-    ex.run_commandline(params)
-
+    config_dict.update({'seed': 42})
+    my_main(config_dict, logger)

@@ -1,5 +1,5 @@
 from functools import partial
-from smac.env import MultiAgentEnv, StarCraft2Env
+from qplex_smac.smac.env import MultiAgentEnv, FakeStarCraft2Env
 import sys
 import os
 
@@ -10,7 +10,8 @@ def env_fn(env, **kwargs) -> MultiAgentEnv:
     return env(**kwargs)
 
 REGISTRY = {
-    "sc2": partial(env_fn, env=StarCraft2Env),
+    "sc2fake": partial(env_fn, env=FakeStarCraft2Env),
+    # "sc2": partial(env_fn, env=StarCraft2Env),
     "foraging": partial(env_fn, env=ForagingEnv),
     "join1": partial(env_fn, env=Join1Env),
 }

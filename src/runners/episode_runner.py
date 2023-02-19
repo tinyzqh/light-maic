@@ -74,7 +74,7 @@ class EpisodeRunner:
                 "reward": [(reward,)],
                 "terminated": [(terminated != env_info.get("episode_limit", False),)],
             }
-
+            # print(self.t)
             self.batch.update(post_transition_data, ts=self.t)
 
             self.t += 1

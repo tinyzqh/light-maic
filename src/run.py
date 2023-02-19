@@ -20,7 +20,7 @@ import numpy as np
 import copy as cp
 import random
 
-def run(_run, _config, _log):
+def run(_config, _log):
 
     # check args sanity
     _config = args_sanity_check(_config, _log)
@@ -56,9 +56,6 @@ def run(_run, _config, _log):
     tb_exp_direc = os.path.join(tb_logs_direc, unique_token)
     if args.use_tensorboard:
         logger.setup_tb(tb_exp_direc)
-
-    # sacred is on by default
-    logger.setup_sacred(_run)
 
     # Run and train
     run_sequential(args=args, logger=logger)
@@ -143,7 +140,7 @@ def run_sequential(args, logger):
     }
 
     env_name = args.env
-    if env_name == 'sc2':
+    if env_name == 'sc2' or env_name == 'sc2fake':
         env_name += '/' + args.env_args['map_name']
 
     buffer = ReplayBuffer(scheme, groups, args.buffer_size, env_info["episode_limit"] + 1,

@@ -1,5 +1,5 @@
 from numpy.lib.ufunclike import isposinf
-from smac.env.multiagentenv import MultiAgentEnv
+from qplex_smac.smac.env.multiagentenv import MultiAgentEnv
 import numpy as np
 import gym
 from gym.envs.registration import register
