@@ -308,52 +308,13 @@ class FakeStarCraft2Env(MultiAgentEnv):
 
     def get_obs_size(self):
         """Returns the size of the observation."""
-        nf_al = 4 + self.unit_type_bits
-        nf_en = 4 + self.unit_type_bits
-
-        if self.obs_all_health:
-            nf_al += 1 + self.shield_bits_ally
-            nf_en += 1 + self.shield_bits_enemy
-
-        own_feats = self.unit_type_bits
-        if self.obs_own_health:
-            own_feats += 1 + self.shield_bits_ally
-        if self.obs_timestep_number:
-            own_feats += 1
-
-        if self.obs_last_action:
-            nf_al += self.n_actions
-
-        move_feats = self.n_actions_move
-        if self.obs_pathing_grid:
-            move_feats += self.n_obs_pathing
-        if self.obs_terrain_height:
-            move_feats += self.n_obs_height
-
-        enemy_feats = self.n_enemies * nf_en
-        ally_feats = (self.n_agents - 1) * nf_al
-
-        return move_feats + enemy_feats + ally_feats + own_feats
+        # 单个智能体的观测 176维
+        return 176
 
     def get_state_size(self):
         """Returns the size of the global state."""
-        if self.obs_instead_of_state:
-            return self.get_obs_size() * self.n_agents
-
-        nf_al = 4 + self.shield_bits_ally + self.unit_type_bits
-        nf_en = 3 + self.shield_bits_enemy + self.unit_type_bits
-
-        enemy_state = self.n_enemies * nf_en
-        ally_state = self.n_agents * nf_al
-
-        size = enemy_state + ally_state
-
-        if self.state_last_action:
-            size += self.n_agents * self.n_actions
-        if self.state_timestep_number:
-            size += 1
-
-        return size
+        # 全局状态
+        return 322
 
     def get_avail_actions(self):
         """Returns the available actions of all agents in a list."""
