@@ -47,7 +47,7 @@ class FakeStarCraft2Env(MultiAgentEnv):
         # Actions
         self.n_actions_no_attack = 6
         self.n_actions_move = 4
-        self.n_actions = 18
+        self.n_actions = 2
 
         self.battles_won = 0
         self.battles_game = 0
@@ -115,6 +115,8 @@ class FakeStarCraft2Env(MultiAgentEnv):
         avail_actions = []
         for agent_id in range(self.n_agents):
             avail_agent = [np.random.randint(0, 2) for _ in range(self.n_actions)]
+            if not all(avail_agent):
+                avail_agent[0] = 1
             avail_actions.append(avail_agent)
         return avail_actions
 
